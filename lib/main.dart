@@ -5,6 +5,7 @@ import 'screens/home_feed_screen.dart';
 import 'screens/add_item_screen.dart';
 import 'screens/approvals_screen.dart';
 import 'screens/profile_screen.dart';
+import 'screens/barcode_scanner_screen.dart';
 import 'data/mock_data.dart';
 import 'models/item_model.dart';
 
@@ -76,46 +77,145 @@ class _MainShellState extends State<MainShell> {
         index: _currentIndex,
         children: _screens,
       ),
-      bottomNavigationBar: Container(
+      floatingActionButton: Container(
         decoration: BoxDecoration(
+          shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: AppTheme.primary.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, -4),
+              color: AppTheme.primary.withValues(alpha: 0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            setState(() => _currentIndex = index);
+        child: FloatingActionButton(
+          onPressed: () {
+            setState(() => _currentIndex = 1);
           },
-          items: [
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.home_rounded),
-              label: 'Início',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.add_circle_outline_rounded),
-              activeIcon: Icon(Icons.add_circle_rounded),
-              label: 'Publicar',
-            ),
-            BottomNavigationBarItem(
-              icon: Badge(
-                label: Text('${MockData.pendingRequestsCount}'),
-                child: const Icon(Icons.fact_check_outlined),
+          elevation: 0,
+          backgroundColor: AppTheme.primary,
+          shape: const CircleBorder(),
+          child: const Icon(
+            Icons.add_rounded,
+            color: Colors.white,
+            size: 32,
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 8,
+        color: AppTheme.surface,
+        elevation: 12,
+        shadowColor: AppTheme.primary.withValues(alpha: 0.1),
+        padding: EdgeInsets.zero,
+        height: 64,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // ── Lado esquerdo ──
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildNavItem(
+                    icon: Icons.home_outlined,
+                    activeIcon: Icons.home_rounded,
+                    label: 'Início',
+                    index: 0,
+                  ),
+                  _buildNavItem(
+                    icon: Icons.barcode_reader,
+                    activeIcon: Icons.barcode_reader,
+                    label: 'Scanner',
+                    index: -1, // Modal, não é tab
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const BarcodeScannerScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
-              activeIcon: Badge(
-                label: Text('${MockData.pendingRequestsCount}'),
-                child: const Icon(Icons.fact_check_rounded),
-              ),
-              label: 'Aprovações',
             ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline_rounded),
-              activeIcon: Icon(Icons.person_rounded),
-              label: 'Perfil',
+            // Espaço para o FAB
+            const SizedBox(width: 56),
+            // ── Lado direito ──
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildNavItem(
+                    icon: Icons.fact_check_outlined,
+                    activeIcon: Icons.fact_check_rounded,
+                    label: 'Aprovações',
+                    index: 2,
+                    badgeCount: MockData.pendingRequestsCount,
+                  ),
+                  _buildNavItem(
+                    icon: Icons.person_outline_rounded,
+                    activeIcon: Icons.person_rounded,
+                    label: 'Perfil',
+                    index: 3,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem({
+    required IconData icon,
+    required IconData activeIcon,
+    required String label,
+    required int index,
+    VoidCallback? onTap,
+    int? badgeCount,
+  }) {
+    final isSelected = _currentIndex == index;
+
+    return InkWell(
+      onTap: onTap ?? () => setState(() => _currentIndex = index),
+      borderRadius: BorderRadius.circular(12),
+      child: SizedBox(
+        width: 64,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            badgeCount != null
+                ? Badge(
+                    label: Text(
+                      '$badgeCount',
+                      style: const TextStyle(fontSize: 10),
+                    ),
+                    child: Icon(
+                      isSelected ? activeIcon : icon,
+                      color: isSelected ? AppTheme.primary : AppTheme.textMuted,
+                      size: 24,
+                    ),
+                  )
+                : Icon(
+                    isSelected ? activeIcon : icon,
+                    color: isSelected ? AppTheme.primary : AppTheme.textMuted,
+                    size: 24,
+                  ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                color: isSelected ? AppTheme.primary : AppTheme.textMuted,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

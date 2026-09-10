@@ -96,9 +96,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -126,10 +124,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
             const SizedBox(height: 8),
             const Text(
               'Simulando leitura...',
-              style: TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
             ),
             const SizedBox(height: 16),
             // Simulated loading
@@ -353,8 +348,11 @@ class _AddItemScreenState extends State<AddItemScreen> {
                             value: cat,
                             child: Row(
                               children: [
-                                Icon(cat.icon,
-                                    size: 18, color: AppTheme.primary),
+                                Icon(
+                                  cat.icon,
+                                  size: 18,
+                                  color: AppTheme.primary,
+                                ),
                                 const SizedBox(width: 10),
                                 Text(
                                   cat.label,
@@ -393,7 +391,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                 onPressed: () {
                                   int current =
                                       int.tryParse(_quantityController.text) ??
-                                          1;
+                                      1;
                                   if (current > 1) {
                                     setState(() {
                                       _quantityController.text =
@@ -401,8 +399,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                     });
                                   }
                                 },
-                                icon: const Icon(Icons.remove,
-                                    color: AppTheme.primary),
+                                icon: const Icon(
+                                  Icons.remove,
+                                  color: AppTheme.primary,
+                                ),
                               ),
                               SizedBox(
                                 width: 50,
@@ -425,14 +425,15 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                 onPressed: () {
                                   int current =
                                       int.tryParse(_quantityController.text) ??
-                                          1;
+                                      1;
                                   setState(() {
-                                    _quantityController.text =
-                                        '${current + 1}';
+                                    _quantityController.text = '${current + 1}';
                                   });
                                 },
-                                icon: const Icon(Icons.add,
-                                    color: AppTheme.primary),
+                                icon: const Icon(
+                                  Icons.add,
+                                  color: AppTheme.primary,
+                                ),
                               ),
                             ],
                           ),
@@ -472,17 +473,13 @@ class _AddItemScreenState extends State<AddItemScreen> {
                             },
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 200),
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 4),
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 14),
+                              margin: const EdgeInsets.symmetric(horizontal: 4),
+                              padding: const EdgeInsets.symmetric(vertical: 14),
                               decoration: BoxDecoration(
                                 gradient: isSelected
                                     ? AppTheme.primaryGradient
                                     : null,
-                                color: isSelected
-                                    ? null
-                                    : AppTheme.surface,
+                                color: isSelected ? null : AppTheme.surface,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                   color: isSelected
@@ -493,8 +490,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                 boxShadow: isSelected
                                     ? [
                                         BoxShadow(
-                                          color: AppTheme.primary
-                                              .withValues(alpha: 0.2),
+                                          color: AppTheme.primary.withValues(
+                                            alpha: 0.2,
+                                          ),
                                           blurRadius: 8,
                                           offset: const Offset(0, 3),
                                         ),
@@ -535,7 +533,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
 
                     // ── Descrição ────────────────────────────────────────
                     _buildLabel(
-                        'Descrição (Opcional)', Icons.description_outlined),
+                      'Descrição (Opcional)',
+                      Icons.description_outlined,
+                    ),
                     const SizedBox(height: 8),
                     TextFormField(
                       controller: _descriptionController,
@@ -562,8 +562,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                             borderRadius: BorderRadius.circular(16),
                           ),
                           elevation: 4,
-                          shadowColor:
-                              AppTheme.primary.withValues(alpha: 0.4),
+                          shadowColor: AppTheme.primary.withValues(alpha: 0.4),
                         ),
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -660,8 +659,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
                   icon: const Icon(Icons.camera_alt_rounded, size: 18),
-                  label: const Text('Câmera',
-                      style: TextStyle(fontWeight: FontWeight.w600)),
+                  label: const Text(
+                    'Câmera',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
@@ -678,8 +679,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
                   icon: const Icon(Icons.photo_library_outlined, size: 18),
-                  label: const Text('Galeria',
-                      style: TextStyle(fontWeight: FontWeight.w600)),
+                  label: const Text(
+                    'Galeria',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
                 ),
               ),
             ],
@@ -803,10 +806,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   ),
                   child: const Text(
                     'OK',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),

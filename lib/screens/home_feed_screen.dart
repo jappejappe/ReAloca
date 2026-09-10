@@ -30,13 +30,9 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
-    _counterAnim = IntTween(
-      begin: 0,
-      end: widget.items.length,
-    ).animate(CurvedAnimation(
-      parent: _counterController,
-      curve: Curves.easeOutCubic,
-    ));
+    _counterAnim = IntTween(begin: 0, end: widget.items.length).animate(
+      CurvedAnimation(parent: _counterController, curve: Curves.easeOutCubic),
+    );
     _counterController.forward();
   }
 
@@ -63,8 +59,9 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     }
 
     if (_selectedCategory != null) {
-      items =
-          items.where((item) => item.category == _selectedCategory).toList();
+      items = items
+          .where((item) => item.category == _selectedCategory)
+          .toList();
     }
 
     // Ordenar por dias parados (mais antigos primeiro)
@@ -339,8 +336,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
                           Text(
                             'Nenhum material encontrado',
                             style: TextStyle(
-                              color:
-                                  AppTheme.textMuted.withValues(alpha: 0.7),
+                              color: AppTheme.textMuted.withValues(alpha: 0.7),
                               fontSize: 15,
                             ),
                           ),
@@ -350,19 +346,14 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
                   ),
                 )
               : SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final item = _filteredItems[index];
-                      return ItemCard(item: item);
-                    },
-                    childCount: _filteredItems.length,
-                  ),
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    final item = _filteredItems[index];
+                    return ItemCard(item: item);
+                  }, childCount: _filteredItems.length),
                 ),
 
           // Bottom padding
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 100),
-          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 100)),
         ],
       ),
     );
