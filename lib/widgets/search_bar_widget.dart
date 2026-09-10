@@ -17,14 +17,12 @@ class SearchBarWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         decoration: BoxDecoration(
-          color: AppTheme.surfaceElevated,
+          color: AppTheme.surface,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: AppTheme.primaryGreen.withValues(alpha: 0.2),
-          ),
+          border: Border.all(color: AppTheme.divider),
           boxShadow: [
             BoxShadow(
-              color: AppTheme.primaryGreen.withValues(alpha: 0.05),
+              color: AppTheme.primary.withValues(alpha: 0.06),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -37,17 +35,17 @@ class SearchBarWidget extends StatelessWidget {
           decoration: InputDecoration(
             hintText: 'Buscar material ou setor...',
             hintStyle: TextStyle(
-              color: AppTheme.textMuted.withValues(alpha: 0.5),
+              color: AppTheme.textMuted.withValues(alpha: 0.7),
             ),
             prefixIcon: Icon(
               Icons.search_rounded,
-              color: AppTheme.textMuted.withValues(alpha: 0.6),
+              color: AppTheme.primary.withValues(alpha: 0.5),
             ),
             suffixIcon: controller.text.isNotEmpty
                 ? IconButton(
                     icon: Icon(
                       Icons.close_rounded,
-                      color: AppTheme.textMuted.withValues(alpha: 0.6),
+                      color: AppTheme.textMuted.withValues(alpha: 0.7),
                     ),
                     onPressed: () {
                       controller.clear();

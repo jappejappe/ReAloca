@@ -25,7 +25,7 @@ class _CategoryCarouselState extends State<CategoryCarousel> {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 20),
         itemCount: ItemCategory.values.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 12),
+        separatorBuilder: (_, __) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
           final category = ItemCategory.values[index];
           final isSelected = widget.selectedCategory == category;
@@ -97,23 +97,29 @@ class _CategoryChipState extends State<_CategoryChip>
           width: 90,
           decoration: BoxDecoration(
             gradient: widget.isSelected ? AppTheme.primaryGradient : null,
-            color: widget.isSelected ? null : AppTheme.surfaceElevated,
+            color: widget.isSelected ? null : AppTheme.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: widget.isSelected
-                  ? AppTheme.accentGreen.withValues(alpha: 0.6)
-                  : AppTheme.primaryGreen.withValues(alpha: 0.2),
+                  ? AppTheme.support
+                  : AppTheme.divider,
               width: widget.isSelected ? 2 : 1,
             ),
             boxShadow: widget.isSelected
                 ? [
                     BoxShadow(
-                      color: AppTheme.primaryGreen.withValues(alpha: 0.3),
+                      color: AppTheme.primary.withValues(alpha: 0.2),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
                   ]
-                : [],
+                : [
+                    BoxShadow(
+                      color: AppTheme.primary.withValues(alpha: 0.04),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -122,7 +128,7 @@ class _CategoryChipState extends State<_CategoryChip>
                 widget.category.icon,
                 color: widget.isSelected
                     ? Colors.white
-                    : AppTheme.textMuted,
+                    : AppTheme.primary,
                 size: 30,
               ),
               const SizedBox(height: 8),

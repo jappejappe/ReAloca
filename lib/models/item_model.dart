@@ -22,7 +22,8 @@ enum ItemCondition {
 
 enum ItemStatus {
   disponivel('Disponível'),
-  reservado('Reservado');
+  reservado('Reservado'),
+  transferido('Transferido');
 
   final String label;
   const ItemStatus(this.label);
@@ -35,12 +36,12 @@ class ItemModel {
   final ItemCategory category;
   final String originSector;
   final ItemCondition condition;
-  final ItemStatus status;
-  final IconData icon;
-  final String? aiRecommendation;
+  ItemStatus status;
+  final int quantity;
+  final String? imagePath;
   final DateTime publishedAt;
 
-  const ItemModel({
+  ItemModel({
     required this.id,
     required this.title,
     required this.description,
@@ -48,8 +49,14 @@ class ItemModel {
     required this.originSector,
     required this.condition,
     required this.status,
-    required this.icon,
-    this.aiRecommendation,
+    required this.quantity,
+    this.imagePath,
     required this.publishedAt,
   });
+
+  /// Calcula quantos dias o item está parado desde a publicação
+  int get daysIdle => DateTime.now().difference(publishedAt).inDays;
+
+  /// Retorna o ícone da categoria como fallback visual quando não há foto
+  IconData get categoryIcon => category.icon;
 }

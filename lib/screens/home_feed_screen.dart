@@ -5,16 +5,18 @@ import '../theme/app_theme.dart';
 import '../widgets/category_carousel.dart';
 import '../widgets/item_card.dart';
 import '../widgets/search_bar_widget.dart';
-import 'item_detail_screen.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HomeFeedScreen extends StatefulWidget {
+  final List<ItemModel> items;
+
+  const HomeFeedScreen({super.key, required this.items});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomeFeedScreen> createState() => _HomeFeedScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+class _HomeFeedScreenState extends State<HomeFeedScreen>
+    with TickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   ItemCategory? _selectedCategory;
   String _searchQuery = '';
@@ -30,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
     _counterAnim = IntTween(
       begin: 0,
-      end: MockData.totalItemsSaved,
+      end: widget.items.length,
     ).animate(CurvedAnimation(
       parent: _counterController,
       curve: Curves.easeOutCubic,
@@ -46,17 +48,27 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   List<ItemModel> get _filteredItems {
-    List<ItemModel> items = MockData.items;
+    List<ItemModel> items = List.from(widget.items);
 
     if (_searchQuery.isNotEmpty) {
-      items = MockData.search(_searchQuery);
+      final q = _searchQuery.toLowerCase();
+      items = items
+          .where(
+            (item) =>
+                item.title.toLowerCase().contains(q) ||
+                item.originSector.toLowerCase().contains(q) ||
+                item.category.label.toLowerCase().contains(q),
+          )
+          .toList();
     }
 
     if (_selectedCategory != null) {
-      items = items
-          .where((item) => item.category == _selectedCategory)
-          .toList();
+      items =
+          items.where((item) => item.category == _selectedCategory).toList();
     }
+
+    // Ordenar por dias parados (mais antigos primeiro)
+    items.sort((a, b) => b.daysIdle.compareTo(a.daysIdle));
 
     return items;
   }
@@ -64,10 +76,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.background,
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          // ── Header ───────────────────────────────────────────────────────
+          // ── Header com Logo + Slogan ───────────────────────────────────
           SliverToBoxAdapter(
             child: Container(
               padding: EdgeInsets.only(
@@ -77,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 bottom: 20,
               ),
               decoration: const BoxDecoration(
-                gradient: AppTheme.primaryGradient,
+                gradient: AppTheme.headerGradient,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(28),
                   bottomRight: Radius.circular(28),
@@ -86,22 +99,38 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Top row
+                  // Top row com logo e notificação
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         children: [
+                          // Logo
                           Container(
-                            padding: const EdgeInsets.all(8),
+                            width: 44,
+                            height: 44,
                             decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(
-                              Icons.eco_rounded,
                               color: Colors.white,
-                              size: 24,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.15),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.asset(
+                                'assets/logo.jpeg',
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => const Icon(
+                                  Icons.swap_horiz_rounded,
+                                  color: AppTheme.primary,
+                                  size: 24,
+                                ),
+                              ),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -109,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'EcoTroca',
+                                'ReAloca',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 22,
@@ -118,12 +147,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 ),
                               ),
                               Text(
-                                'Escolar',
+                                'Redistribuindo materiais',
                                 style: TextStyle(
-                                  color: Color(0xFFA5D6A7),
-                                  fontSize: 14,
+                                  color: Color(0xFFB0C4DE),
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w500,
-                                  letterSpacing: 1.5,
                                 ),
                               ),
                             ],
@@ -137,9 +165,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           color: Colors.white.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Badge(
-                          smallSize: 8,
-                          child: Icon(
+                        child: Badge(
+                          label: Text(
+                            '${MockData.pendingRequestsCount}',
+                            style: const TextStyle(fontSize: 10),
+                          ),
+                          child: const Icon(
                             Icons.notifications_outlined,
                             color: Colors.white,
                             size: 22,
@@ -149,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  // Counter card
+                  // Slogan banner
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(
@@ -160,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       color: Colors.white.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.1),
+                        color: Colors.white.withValues(alpha: 0.15),
                       ),
                     ),
                     child: Row(
@@ -168,12 +199,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: AppTheme.accentGreen.withValues(alpha: 0.2),
+                            color: AppTheme.accent.withValues(alpha: 0.25),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Icon(
                             Icons.recycling_rounded,
-                            color: Color(0xFF69F0AE),
+                            color: AppTheme.accent,
                             size: 26,
                           ),
                         ),
@@ -182,23 +213,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Itens Salvos do Desperdício',
+                              const Text(
+                                'Redistribuindo materiais,\ngerando possibilidades.',
                                 style: TextStyle(
-                                  color: Colors.white.withValues(alpha: 0.85),
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.3,
                                 ),
                               ),
-                              const SizedBox(height: 2),
+                              const SizedBox(height: 4),
                               AnimatedBuilder(
                                 animation: _counterAnim,
                                 builder: (context, child) {
                                   return Text(
-                                    '${_counterAnim.value} materiais reaproveitados',
+                                    '${_counterAnim.value} materiais disponíveis',
                                     style: const TextStyle(
-                                      color: Color(0xFF69F0AE),
-                                      fontSize: 20,
+                                      color: AppTheme.accent,
+                                      fontSize: 16,
                                       fontWeight: FontWeight.w800,
                                     ),
                                   );
@@ -209,7 +241,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                         const Icon(
                           Icons.trending_up_rounded,
-                          color: Color(0xFF69F0AE),
+                          color: AppTheme.accent,
                           size: 28,
                         ),
                       ],
@@ -220,7 +252,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
 
-          // ── Search Bar ───────────────────────────────────────────────────
+          // ── Search Bar ────────────────────────────────────────────────
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.only(top: 20, bottom: 6),
@@ -233,7 +265,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
 
-          // ── Categories ───────────────────────────────────────────────────
+          // ── Categories ────────────────────────────────────────────────
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.only(top: 16, bottom: 4),
@@ -263,7 +295,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
 
-          // ── Items Header ─────────────────────────────────────────────────
+          // ── Items Header ──────────────────────────────────────────────
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
@@ -281,7 +313,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   Text(
                     '${_filteredItems.length} itens',
                     style: TextStyle(
-                      color: AppTheme.textMuted.withValues(alpha: 0.7),
+                      color: AppTheme.textMuted.withValues(alpha: 0.8),
                       fontSize: 13,
                     ),
                   ),
@@ -290,7 +322,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
 
-          // ── Items List ───────────────────────────────────────────────────
+          // ── Items List ────────────────────────────────────────────────
           _filteredItems.isEmpty
               ? SliverToBoxAdapter(
                   child: Center(
@@ -307,7 +339,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           Text(
                             'Nenhum material encontrado',
                             style: TextStyle(
-                              color: AppTheme.textMuted.withValues(alpha: 0.6),
+                              color:
+                                  AppTheme.textMuted.withValues(alpha: 0.7),
                               fontSize: 15,
                             ),
                           ),
@@ -320,16 +353,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
                       final item = _filteredItems[index];
-                      return ItemCard(
-                        item: item,
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => ItemDetailScreen(item: item),
-                            ),
-                          );
-                        },
-                      );
+                      return ItemCard(item: item);
                     },
                     childCount: _filteredItems.length,
                   ),
